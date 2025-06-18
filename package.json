@@ -1,0 +1,29 @@
+{
+  "name": "node_api",
+  "description": "Api template da usare per backend node",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier . --write",
+    "check-format": "prettier . --check"
+  },
+  "keywords": [
+    "api",
+    "rest api",
+    "node"
+  ],
+  "author": "Violatto Alex",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.3",
+    "prettier": "3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "class-validator": "^0.14.2",
+    "express": "^5.1.0"
+  }
+}

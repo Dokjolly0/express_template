@@ -8,7 +8,6 @@ export interface User {
   // Authentication Info
   status?: string;
   role?: string;
-  isConfirmed?: boolean;
   // Security Info
   createdAt?: Date | string;
   lastUpdateAt?: Date | string | undefined;

@@ -9,7 +9,6 @@ export const userSchema = new mongoose.Schema<User>({
 
   status: { type: String, enum: USER_STATUS_ENUM, default: null },
   role: { type: String, enum: USER_ROLE_ENUM, default: "user" },
-  isConfirmed: { type: Boolean, default: false },
 
   createdAt: { type: Date || String, default: null },
   lastUpdateAt: { type: Date || String, default: null },

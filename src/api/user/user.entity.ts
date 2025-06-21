@@ -1,3 +1,5 @@
+import { UserStatus, UserRole } from "../../utils/consts/types/user.type";
+
 export interface User {
   // Unique ID
   id?: string;
@@ -6,8 +8,8 @@ export interface User {
   lastName: string;
   picture?: string;
   // Authentication Info
-  status?: string;
-  role?: string;
+  status?: UserStatus;
+  role?: UserRole;
   // Security Info
   createdAt?: Date | string;
   lastUpdateAt?: Date | string | undefined;

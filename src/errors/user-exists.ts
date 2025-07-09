@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 
 export class UserExistsError extends Error {
-  constructor(username: string) {
-    super(`username ${username} already in use`);
+  constructor() {
+    super();
     this.name = "UserExists";
-    Object.setPrototypeOf(this, UserExistsError.prototype);
+    this.message = "username already in use";
   }
 }
 
-export const userExistErrorHandler = (
+export const userExistHandler = (
   err: Error,
   req: Request,
   res: Response,
@@ -17,7 +17,7 @@ export const userExistErrorHandler = (
   if (err instanceof UserExistsError) {
     res.status(409).json({
       error: err.name,
-      message: err.message
+      message: err.message,
     });
   } else {
     next(err);

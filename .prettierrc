@@ -1,7 +1,4 @@
 {
-  "bracketSameLine": true,
-  "singleQuote": false,
-  "tabWidth": 2,
-  "trailingComma": "none",
-  "printWidth": 100
+  "htmlWhitespaceSensitivity": "ignore",
+  "printWidth": 110
 }

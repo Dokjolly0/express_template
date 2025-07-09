@@ -1,23 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 
 export class NotFoundError extends Error {
-  constructor(entity?: string) {
-    super(`Entity ${entity} not found`);
+  constructor() {
+    super("Entity not found");
     this.name = "NotFoundError";
-    Object.setPrototypeOf(this, NotFoundError.prototype);
+    this.message = "Entity not found";
   }
 }
 
-export const notFoundErrorHandler = (
+export const notFoundHandler = (
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   if (err instanceof NotFoundError) {
-    res.status(404).json({
+    res.status(404);
+    res.json({
       error: err.name,
-      message: err.message
+      message: err.message,
     });
   } else {
     next(err);

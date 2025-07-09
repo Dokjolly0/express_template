@@ -1,23 +1,23 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { UserIdentityModel } from "./user-identity.model";
 import * as bcrypt from "bcrypt";
-import { UserIdentityModel } from "../../user-identity/user-identity.model";
 
 passport.use(
   new LocalStrategy(
     {
       usernameField: "username",
       passwordField: "password",
-      session: false
+      session: false,
     },
-    async (username: string, password: string, done) => {
+    async (username, password, done) => {
       try {
         const identity = await UserIdentityModel.findOne({
-          "credentials.username": username
+          "credentials.username": username,
         });
         if (!identity) {
           return done(null, false, {
-            message: `username ${username} not found`
+            message: `username ${username} not found`,
           });
         }
         const match = await bcrypt.compare(password, identity.credentials.hashedPassword);

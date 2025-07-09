@@ -1,6 +1,6 @@
 import "dotenv/config";
 import passport from "passport";
-import { ExtractJwt, VerifiedCallback, Strategy as JwtStrategy } from "passport-jwt";
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { UserModel } from "../../../api/user/user.model";
 import { requireEnvVars } from "../../../utils/dotenv";
 
@@ -10,9 +10,9 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: JWT_SECRET
+      secretOrKey: JWT_SECRET,
     },
-    async (payload: any, done: VerifiedCallback) => {
+    async (payload, done) => {
       try {
         const user = await UserModel.findById(payload.id);
         if (user) {

@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es6",
     "module": "commonjs",
     "outDir": "dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
     "resolveJsonModule": true,
-    "strictPropertyInitialization": true,
+    "strictPropertyInitialization": false,
     "experimentalDecorators": true
   }
 }

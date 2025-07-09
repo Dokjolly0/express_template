@@ -1,5 +1,5 @@
 import "dotenv/config"; // Load environment variables from .env file
-import { CustomError } from "../errors/custom";
+import { CustomError } from "../errors/custom-error";
 import { DotEnvError } from "../errors/dotenv";
 
 interface RequireEnvOptions {
@@ -8,17 +8,11 @@ interface RequireEnvOptions {
 
 // OVERLOADS
 export function requireEnvVars(field: string): string;
-export function requireEnvVars(
-  field: string,
-  options: { throwOnMissing: false }
-): string | undefined;
+export function requireEnvVars(field: string, options: { throwOnMissing: false }): string | undefined;
 export function requireEnvVars(field: string, options?: RequireEnvOptions): string;
 
 export function requireEnvVars(fields: string[]): string[];
-export function requireEnvVars(
-  fields: string[],
-  options: { throwOnMissing: false }
-): (string | undefined)[];
+export function requireEnvVars(fields: string[], options: { throwOnMissing: false }): (string | undefined)[];
 export function requireEnvVars(fields: string[], options?: RequireEnvOptions): string[];
 
 // IMPLEMENTAZIONE UNICA
@@ -61,5 +55,5 @@ export function requireEnvVars(
 }
 
 export const notThrowDotEnvError: RequireEnvOptions = {
-  throwOnMissing: false
+  throwOnMissing: false,
 };

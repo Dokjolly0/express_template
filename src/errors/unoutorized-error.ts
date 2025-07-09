@@ -1,23 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 
 export class UnauthorizedError extends Error {
-  constructor(message = "User not authorized") {
+  constructor(message = "Unauthorized") {
     super(message);
     this.name = "UnauthorizedError";
-    Object.setPrototypeOf(this, UnauthorizedError.prototype);
+    this.message = "User not autorized";
   }
 }
 
-export const unauthorizedErrorHandler = (
+export const unauthorizedHandler = (
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   if (err instanceof UnauthorizedError) {
-    res.status(401).json({
+    res.status(401);
+    res.json({
       error: err.name,
-      message: err.message
+      message: err.message,
     });
   } else {
     next(err);

@@ -2,17 +2,23 @@ import { Request, Response, NextFunction } from "express";
 
 export class DotEnvError extends Error {
   constructor(entity?: string) {
-    super(`Entity ${entity} not found in dotenv`);
+    super("Entity not found in dotenv");
     this.name = "DotEnvError";
-    Object.setPrototypeOf(this, DotEnvError.prototype);
+    this.message = `Entity ${entity} not found in dotenv`;
   }
 }
 
-export const dotenvErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const dotenvHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (err instanceof DotEnvError) {
-    res.status(404).json({
+    res.status(404);
+    res.json({
       error: err.name,
-      message: err.message
+      message: err.message,
     });
   } else {
     next(err);

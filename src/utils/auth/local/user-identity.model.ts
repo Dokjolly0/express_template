@@ -6,8 +6,8 @@ const userIdentitySchema = new mongoose.Schema<UserIdentity>({
   credentials: {
     type: {
       username: String,
-      hashedPassword: String
-    }
+      hashedPassword: String,
+    },
   },
   user: { type: Schema.Types.ObjectId, ref: "User" },
 
@@ -18,8 +18,8 @@ const userIdentitySchema = new mongoose.Schema<UserIdentity>({
   resetPasswordToken: { type: String || undefined || null, default: undefined },
   resetPasswordExpires: {
     type: Date || String || undefined,
-    default: undefined
-  }
+    default: undefined,
+  },
 });
 
 userIdentitySchema.pre("findOne", function (next) {

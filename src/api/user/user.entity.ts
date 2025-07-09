@@ -4,11 +4,13 @@ export interface User {
   // Base Info
   firstName: string;
   lastName: string;
-  role: string;
+  role?: string;
   // Security Info
   createdAt?: Date | string;
   lastUpdateAt?: Date | string | undefined;
   lastLogin?: Date | string | undefined;
   lastAllowedIp?: string | undefined;
   allowedIps?: string[] | undefined;
+
+  isTournamentParticipant?: boolean;
 }

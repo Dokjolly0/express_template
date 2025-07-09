@@ -13,10 +13,6 @@ export class AddUserDTO {
 
   @MinLength(8)
   password: string;
-
-  @IsString()
-  @IsNotEmpty()
-  role: string;
 }
 
 export class LoginDTO {

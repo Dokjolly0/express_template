@@ -4,10 +4,12 @@ import matchService from "./match.service";
 import { Match } from "./match.entity";
 
 // Crea una nuova partita
-export const createMatch = async (req: TypedRequest<Match>, res: Response, next: NextFunction) => {
+import { CreateMatchDTO, UpdateMatchDTO } from "./match.dto";
+
+export const createMatch = async (req: TypedRequest<CreateMatchDTO>, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;
-    const matchData: Match = req.body;
+    const matchData: CreateMatchDTO = req.body;
     const result = await matchService.create(matchData, user.id!);
     res.status(201).json(result);
   } catch (error) {
@@ -16,7 +18,7 @@ export const createMatch = async (req: TypedRequest<Match>, res: Response, next:
 };
 
 // Modifica una partita esistente
-export const updateMatch = async (req: TypedRequest<Match>, res: Response, next: NextFunction) => {
+export const updateMatch = async (req: TypedRequest<UpdateMatchDTO>, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;
     const matchId = req.params.id;

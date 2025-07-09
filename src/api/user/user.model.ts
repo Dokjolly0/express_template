@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema<User>({
   lastLogin: { type: Date, default: undefined },
   lastAllowedIp: { type: String || undefined, default: undefined },
   allowedIps: { type: [String], default: [] },
+
+  isTournamentParticipant: { type: Boolean, default: false },
 });
 
 userSchema.virtual("fullName").get(function () {

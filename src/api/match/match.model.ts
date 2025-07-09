@@ -13,6 +13,14 @@ const matchSchema = new mongoose.Schema<Match>({
   note: { type: String, default: "" },
 });
 
+matchSchema.virtual("winner").get(function () {
+    if (this.played) {
+        if (this.scorePlayer1 > this.scorePlayer2) return this.player1;
+        if (this.scorePlayer2 > this.scorePlayer1) return this.player2;
+    }
+    return null; // No winner if not played or scores are equal
+});
+
 matchSchema.set("toJSON", {
   virtuals: true,
   transform: (_, ret) => {

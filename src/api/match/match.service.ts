@@ -5,10 +5,11 @@ import { NotFoundError } from "../../errors/not-found";
 import { UnauthorizedError } from "../../errors/unoutorized-error";
 import { validateMatchScore } from "../../utils/validate-match-score";
 import { BadRequestError } from "../../errors/bad-request-error";
+import { CreateMatchDTO, UpdateMatchDTO } from "./match.dto";
 
 export class MatchService {
   // Crea un nuovo match
-  async create(matchData: Match, creatorId: string): Promise<Match> {
+  async create(matchData: CreateMatchDTO, creatorId: string): Promise<Match> {
     const user = await UserModel.findById(creatorId);
     if (!user || user.role !== "admin") throw new UnauthorizedError("Solo gli organizzatori possono creare match");
 
@@ -25,7 +26,7 @@ export class MatchService {
   }
 
   // Aggiorna un match
-  async update(matchId: string, updates: Partial<Match>, userId: string): Promise<Match> {
+  async update(matchId: string, updates: Partial<UpdateMatchDTO>, userId: string): Promise<Match> {
     const user = await UserModel.findById(userId);
     if (!user || user.role !== "admin") throw new UnauthorizedError("Solo gli organizzatori possono modificare match");
 
@@ -59,7 +60,7 @@ export class MatchService {
   // Recupera tutti i match
   async getAll(userId: string): Promise<Match[]> {
     const user = await UserModel.findById(userId);
-    if (!user || user.role !== "admin") throw new UnauthorizedError("Accesso riservato agli iscritti al torneo");
+    if (!user || !user.isTournamentParticipant) throw new UnauthorizedError("Access reserved to tournament participants");
 
     return await MatchModel.find()
       .populate("player1", "firstName lastName")
@@ -70,7 +71,7 @@ export class MatchService {
   // Recupera un match per ID
   async getById(matchId: string, userId: string): Promise<Match> {
     const user = await UserModel.findById(userId);
-    if (!user || user.role !== "admin") throw new UnauthorizedError();
+    if (!user || !user.isTournamentParticipant) throw new UnauthorizedError("Access reserved to tournament participants");
 
     const match = await MatchModel.findById(matchId)
       .populate("player1", "firstName lastName")

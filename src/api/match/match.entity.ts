@@ -10,4 +10,5 @@ export interface Match {
   createdBy: User;
   modifiedBy: User;
   note: string;
+  winner: User | null; // Virtual field to determine the winner of a match
 }

@@ -1,10 +1,10 @@
 import "dotenv/config";
 import "reflect-metadata";
-import mongoose from "mongoose";
 
 import app from "./app";
-import { requireEnvVars } from "./utils/dotenv";
 import { emailService } from "./utils/services/email.service";
+import mongoose from "mongoose";
+import { requireEnvVars } from "./utils/dotenv";
 
 const [MONGO_URI, DB_NAME, PORT, ADMIN_USER_NAME] = requireEnvVars([
   "MONGO_URI",
@@ -20,7 +20,6 @@ mongoose
     PORT;
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT}`);
-      emailService.sendEmail("alexviolattolibero.it@gmail.com", "Test Email", "Server started successfully");
     });
   })
   .catch((err) => {

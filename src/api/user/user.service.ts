@@ -1,23 +1,27 @@
-import { UserExistsError } from "../../errors/user-exists";
-import { UnauthorizedError } from "../../errors/unoutorized-error";
-import { NotFoundError } from "../../errors/not-found";
-import { UserIdentityModel } from "../../utils/auth/local/user-identity.model";
-import { User } from "./user.entity";
-import { UserModel } from "./user.model";
-import * as bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
 import "dotenv/config";
-import { validateNameField, verifyEmptyField } from "../../utils/verify-empty-field";
-import { getIP } from "../../utils/fetch-ip";
-import { notThrowDotEnvError, requireEnvVars } from "../../utils/dotenv";
-import { AuthCredential } from "../auth/auth.entity";
-import { emailService } from "../../utils/services/email.service";
+
+import * as bcrypt from "bcrypt";
+
 import { getHtmlRequestChangePassword, urlResetPassword } from "../../utils/get-html-content";
+import { notThrowDotEnvError, requireEnvVars } from "../../utils/dotenv";
+import { validateNameField, verifyEmptyField } from "../../utils/verify-empty-field";
+
+import { AuthCredential } from "../auth/auth.entity";
+import { NotFoundError } from "../../errors/not-found";
+import { Request } from "express";
+import { UnauthorizedError } from "../../errors/unoutorized-error";
+import { User } from "./user.entity";
+import { UserExistsError } from "../../errors/user-exists";
+import { UserIdentityModel } from "../../utils/auth/local/user-identity.model";
+import { UserModel } from "./user.model";
+import { emailService } from "../../utils/services/email.service";
+import { getClientIP } from "../../utils/fetch-ip";
+import { v4 as uuidv4 } from "uuid";
 
 let ADMIN_USER_NAME: string | undefined = requireEnvVars("ADMIN_USER_NAME", notThrowDotEnvError);
 if (!ADMIN_USER_NAME) ADMIN_USER_NAME = "admin";
 export class UserService {
-  async add(user: User, credentials: AuthCredential): Promise<User> {
+  async add(user: User, credentials: AuthCredential, req: Request): Promise<User> {
     const existingIdentity = await UserIdentityModel.findOne({
       "credentials.username": credentials.username,
     });
@@ -30,7 +34,7 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(credentials.password, 10);
     const confirmationToken = uuidv4();
-    const ip: string | undefined = await getIP();
+    const ip: string | undefined = getClientIP(req);
     const allowedIps: string[] = [];
     if (ip) allowedIps.push(ip);
     const IS_REQUIRED_EMAIL_VERIFICATION = requireEnvVars("IS_REQUIRED_EMAIL_VERIFICATION");
@@ -63,13 +67,16 @@ export class UserService {
     return newUser;
   }
 
-  async showAllUsers(userId: string, isAdmin: boolean = false): Promise<User[]> {
+  async showAllUsersOnlyAdmin(userId: string, isAdmin: boolean = false): Promise<User[]> {
     const isAuthenticated = await UserModel.findById(userId);
     isAdmin = isAuthenticated?.role === ADMIN_USER_NAME ? true : false;
     if (!isAuthenticated || !isAdmin) throw new UnauthorizedError();
     const users = await UserModel.find();
-
     return users;
+  }
+
+  async showAllUsers(): Promise<User[]> {
+    return await UserModel.find();
   }
 
   async getUserById(userId: string, userIdToFind: string) {

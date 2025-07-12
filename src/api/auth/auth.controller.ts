@@ -1,16 +1,18 @@
 import "dotenv/config";
-import { NextFunction, Response } from "express";
-import { TypedRequest } from "../../utils/typed-request";
-import userService from "../user/user.service";
-import { AddUserDTO } from "./auth.dto";
-import { omit, pick } from "lodash";
-import passport, { use } from "passport";
+
 import * as jwt from "jsonwebtoken";
-import { requireEnvVars } from "../../utils/dotenv";
-import { getIP } from "../../utils/fetch-ip";
-import { UserModel } from "../user/user.model";
-import { UnauthorizedError } from "../../errors/unoutorized-error";
+
+import { NextFunction, Response } from "express";
+import { omit, pick } from "lodash";
+
+import { AddUserDTO } from "./auth.dto";
 import { CustomError } from "../../errors/custom-error";
+import { TypedRequest } from "../../utils/typed-request";
+import { UserModel } from "../user/user.model";
+import { getClientIP } from "../../utils/fetch-ip";
+import passport from "passport";
+import { requireEnvVars } from "../../utils/dotenv";
+import userService from "../user/user.service";
 
 const [JWT_SECRET, EXPIRED_IN_JWT, FRONTEND_URL] = requireEnvVars([
   "JWT_SECRET",
@@ -46,7 +48,7 @@ export const login = async (req: TypedRequest, res: Response, next: NextFunction
       }
 
       const userTmp = await UserModel.findById(user.id);
-      const ip: string | undefined = await getIP();
+      const ip: string | undefined = getClientIP(req);
       if (userTmp) {
         if (ip && userTmp.allowedIps && !userTmp.allowedIps.includes(ip)) {
           userTmp.allowedIps.push(ip);
@@ -77,7 +79,7 @@ export const add = async (req: TypedRequest<AddUserDTO>, res: Response, next: Ne
     const userBody = omit(req.body, "username", "password");
     const credentials = pick(req.body, "username", "password");
 
-    const newUser = await userService.add(userBody, credentials);
+    const newUser = await userService.add(userBody, credentials, req);
     const identity = await userService.getUserIdentityByUserId(newUser.id!);
 
     let message = "User register succesfully.";

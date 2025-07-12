@@ -1,11 +1,12 @@
-import fs from "fs";
-import path from "path";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+
+import { NotFoundError } from "../../errors/not-found";
 import { TypedRequest } from "../../utils/typed-request";
 import { UnauthorizedError } from "../../errors/unoutorized-error";
 import { UserModel } from "./user.model";
+import fs from "fs";
+import path from "path";
 import userService from "./user.service";
-import { NotFoundError } from "../../errors/not-found";
 
 export const me = async (req: TypedRequest, res: Response, next: NextFunction) => {
   res.json(req.user);
@@ -15,7 +16,8 @@ export const showAllUsers = async (req: TypedRequest, res: Response, next: NextF
   try {
     const user = req.user!;
     if (!user) throw new UnauthorizedError();
-    const users = await userService.showAllUsers(user.id!);
+    // const users = await userService.showAllUsersOnlyAdmin(user.id!);
+    const users = await userService.showAllUsers();
     res.json(users);
   } catch (err) {
     next(err);

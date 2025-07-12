@@ -1,12 +1,13 @@
-import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2";
-import { UserModel } from "../../../api/user/user.model";
+import { Request } from "express";
 import { UserIdentityModel } from "../local/user-identity.model";
-import { v4 as uuidv4 } from "uuid";
-import { requireEnvVars } from "../../dotenv";
-import { getIP } from "../../fetch-ip";
+import { UserModel } from "../../../api/user/user.model";
 import { emailService } from "../../services/email.service";
+import { getClientIP } from "../../fetch-ip";
 import { isValidResendEmail } from "../local/local-strategy";
+import passport from "passport";
+import { requireEnvVars } from "../../dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 const [CLIENT_ID, CLIENT_SECRET, CALLBACK_URL] = requireEnvVars([
   "GITHUB_CLIENT_ID",
@@ -23,11 +24,12 @@ passport.use(
       clientSecret: CLIENT_SECRET,
       callbackURL: CALLBACK_URL,
       scope: ["user:email"],
+      passReqToCallback: true, // << Abilita il passaggio di `req`
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req: Request, _accessToken, _refreshToken, profile, done) => {
       try {
-        const email = profile.emails?.[0]?.value || `${profile.username}@github.com`;
-        const ip = await getIP();
+        const email = profile.emails?.[0]?.value || `${profile.username}@github.com`.toLocaleLowerCase();
+        const ip = getClientIP(req);
         const allowedIps = ip ? [ip] : [];
         const isActive = !IS_REQUIRED_EMAIL_VERIFICATION;
 

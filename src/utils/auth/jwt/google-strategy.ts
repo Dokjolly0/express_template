@@ -1,12 +1,14 @@
-import passport from "passport";
+import { BadRequestError } from "../../../errors/bad-request-error";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { UserModel } from "../../../api/user/user.model";
+import { Request } from "express";
 import { UserIdentityModel } from "../local/user-identity.model";
-import { v4 as uuidv4 } from "uuid";
-import { requireEnvVars } from "../../dotenv";
-import { getIP } from "../../fetch-ip";
+import { UserModel } from "../../../api/user/user.model";
 import { emailService } from "../../services/email.service";
+import { getClientIP } from "../../fetch-ip";
 import { isValidResendEmail } from "../local/local-strategy";
+import passport from "passport";
+import { requireEnvVars } from "../../dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 const [GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL] = requireEnvVars([
   "GOOGLE_CLIENT_ID",
@@ -22,11 +24,13 @@ passport.use(
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: GOOGLE_CALLBACK_URL,
+      passReqToCallback: true, // <--- AGGIUNGI QUESTO
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req: Request, _accessToken, _refreshToken, profile, done) => {
       try {
-        const email = profile.emails?.[0]?.value || `${profile.username}@github.com`;
-        const ip = await getIP();
+        const email = profile.emails?.[0]?.value?.toLowerCase();
+        if (!email) return done(new BadRequestError("Missing email from Google profile"), null);
+        const ip = getClientIP(req);
         const allowedIps = ip ? [ip] : [];
         const isActive = !IS_REQUIRED_EMAIL_VERIFICATION;
 
@@ -36,7 +40,9 @@ passport.use(
 
         if (!userIdentity) {
           // Crea utente e userIdentity
-          const [firstName, lastName] = (profile.displayName || profile.username).split(" ");
+          const fullName = profile.displayName || "";
+          const [firstName, ...rest] = fullName.trim().split(" ");
+          const lastName = rest.join(" ") || "";
 
           user = await UserModel.create({
             username: email,
